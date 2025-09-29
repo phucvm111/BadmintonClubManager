@@ -1,0 +1,22 @@
+﻿<Window x:Class="BadmintonClub.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:BadmintonClub.ViewModels"
+        xmlns:v="clr-namespace:BadmintonClub.Views"
+        Title="Quản lý CLB Cầu lông" Width="1200" Height="800">
+    <Window.Resources>
+        <!-- DataTemplate cục bộ để test -->
+        <DataTemplate DataType="{x:Type vm:MembersViewModel}">
+            <v:MembersView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="8">
+            <Button Content="Thành viên" Command="{Binding NavigateMembersCommand}" Margin="4"/>
+            <Button Content="Điểm danh" Command="{Binding NavigateAttendanceCommand}" Margin="4"/>
+
+        </StackPanel>
+        <ContentControl Content="{Binding CurrentView}" />
+    </DockPanel>
+</Window>

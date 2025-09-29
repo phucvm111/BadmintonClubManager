@@ -1,0 +1,61 @@
+﻿<Window x:Class="BadmintonClub.Views.Views.Attendance.ReminderDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Gửi nhắc email" Height="520" Width="820" WindowStartupLocation="CenterOwner">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Chế độ:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <ComboBox Width="180" SelectedValue="{Binding Reminder.Mode}" Margin="0,0,16,0">
+                <ComboBoxItem Content="Tất cả"/>
+                <ComboBoxItem Content="Thường xuyên vắng"/>
+                <ComboBoxItem Content="Bình thường"/>
+            </ComboBox>
+
+            <TextBlock Text="From:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox Width="260" Text="{Binding Reminder.FromEmail}" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="0,0,0,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Tiêu đề" FontWeight="SemiBold"/>
+            <TextBox Grid.Row="1" Text="{Binding Reminder.Subject}" Margin="0,4,0,0"/>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Người nhận" Margin="0,0,8,0">
+                <DataGrid ItemsSource="{Binding Reminder.Recipients}" AutoGenerateColumns="False"
+                  CanUserAddRows="False" HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="Chọn" Binding="{Binding Selected}" Width="60"/>
+                        <DataGridTextColumn Header="Tên" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+
+            <GroupBox Grid.Column="1" Header="Nội dung (HTML)">
+                <TextBox Text="{Binding Reminder.HtmlBody}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+            </GroupBox>
+        </Grid>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Gửi" Width="100" Margin="0,0,8,0" Command="{Binding SendReminderCommand}"/>
+            <Button Content="Đóng" Width="100" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

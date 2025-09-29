@@ -1,0 +1,123 @@
+﻿<UserControl x:Class="BadmintonClub.Views.AttendanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf">
+    <UserControl.Resources>
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="#FFFFFF"/>
+            <Setter Property="AlternatingRowBackground" Value="#F6F8FA"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#EEF1F5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Thanh công cụ gradient -->
+        <Border Grid.Row="0" Margin="0,0,0,8">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#2196F3" Offset="0"/>
+                    <GradientStop Color="#1976D2" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="8" ShadowDepth="3" Opacity="0.2"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal" Margin="12">
+                <DatePicker SelectedDate="{Binding SelectedDate}" Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}" Margin="0,0,8,0" Width="160"/>
+                <Button Content="Nạp buổi" Command="{Binding LoadCommand}" Margin="0,0,8,0"/>
+                <Button Content="Lưu" Command="{Binding SaveCommand}" Margin="0,0,8,0"/>
+                <Button Content="Gửi nhắc email" Command="{Binding OpenReminderDialogCommand}" Margin="0,0,8,0"/>
+                <Button Content="Báo cáo tháng" Command="{Binding ToggleReportCommand}"/>
+                
+
+            </StackPanel>
+        </Border>
+
+        <!-- Lưới điểm danh -->
+        <DataGrid Grid.Row="1" x:Name="AttGrid" ItemsSource="{Binding Rows}" AutoGenerateColumns="False" Margin="0,8,0,0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Họ tên" Binding="{Binding Member.HoTen}" IsReadOnly="True" Width="220"/>
+                <DataGridTextColumn Header="Mã" Binding="{Binding Member.MemberCode}" IsReadOnly="True" Width="120"/>
+                <DataGridTextColumn Header="Nhóm" Binding="{Binding Member.NhomTrinhDo}" IsReadOnly="True" Width="120"/>
+                <DataGridComboBoxColumn Header="Trạng thái" SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged}" Width="140">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding DataContext.StatusOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding DataContext.StatusOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+                <DataGridTextColumn Header="Lý do vắng" Binding="{Binding LyDoVang, UpdateSourceTrigger=PropertyChanged}" Width="220"/>
+                <DataGridTextColumn Header="Ghi chú" Binding="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Phần báo cáo với OxyPlot -->
+        <Border Grid.Row="2" Visibility="{Binding ShowReport, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,8,0,0" Background="#F9F9F9" BorderBrush="#DDD" BorderThickness="1" CornerRadius="4">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
+            </Border.Effect>
+            <StackPanel Margin="12">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="Báo cáo tháng" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
+                    <ComboBox ItemsSource="{Binding Months}" SelectedItem="{Binding SelectedMonth}" Width="100" Margin="0,0,8,0"/>
+                    <ComboBox ItemsSource="{Binding Years}" SelectedItem="{Binding SelectedYear}" Width="80" Margin="0,0,8,0"/>
+                    <Button Content="Tính toán" Command="{Binding CalculateReportCommand}"/>
+                </StackPanel>
+                <oxy:PlotView Model="{Binding AttendancePlotModel}" Height="150" Margin="0,0,0,8"/>
+                <DataGrid ItemsSource="{Binding MonthlyStats}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Thành viên" Binding="{Binding MemberName}" Width="200"/>
+                        <DataGridTextColumn Header="Tổng buổi" Binding="{Binding TotalSessions}" Width="100"/>
+                        <DataGridTextColumn Header="Có mặt" Binding="{Binding PresentCount}" Width="100"/>
+                        <DataGridTextColumn Header="Vắng" Binding="{Binding AbsentCount}" Width="100"/>
+                        <DataGridTextColumn Header="Tỷ lệ tham gia (%)" Binding="{Binding AttendanceRate, StringFormat={}{0:F1}%}" Width="120"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Expander Header="Dự báo vắng" IsExpanded="False" Margin="0,12,0,0">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Content="Dự báo" Command="{Binding PredictAbsenceCommand}" Margin="0,0,8,0" Width="120"/>
+                            <Button Content="Gửi nhắc (rủi ro cao)" Command="{Binding SendReminderForHighRiskCommand}" Width="180"/>
+                        </StackPanel>
+                        <DataGrid ItemsSource="{Binding HighRisk}" AutoGenerateColumns="False" Height="160">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Thành viên" Binding="{Binding MemberName}" Width="*"/>
+                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+                                <DataGridTextColumn Header="Xác suất (%)" Binding="{Binding Probability, StringFormat={}{0:P1}}" Width="120"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Expander>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
