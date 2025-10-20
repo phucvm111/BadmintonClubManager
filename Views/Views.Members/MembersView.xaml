@@ -153,6 +153,8 @@
                 <DataGridTextColumn Header="Họ tên" 
                                    Binding="{Binding HoTen, UpdateSourceTrigger=PropertyChanged}" 
                                    Width="220"/>
+
+                <!-- Giới tính ComboBox -->
                 <DataGridComboBoxColumn Header="Giới tính"
                                        SelectedItemBinding="{Binding GioiTinh, UpdateSourceTrigger=PropertyChanged}"
                                        Width="100">
@@ -168,9 +170,6 @@
                             </Setter>
                             <Setter Property="IsHitTestVisible" Value="False"/>
                             <Setter Property="Focusable" Value="False"/>
-                            <Setter Property="Background" Value="#F8F9FA"/>
-                            <Setter Property="BorderBrush" Value="#CED4DA"/>
-                            <Setter Property="Padding" Value="8,4"/>
                         </Style>
                     </DataGridComboBoxColumn.ElementStyle>
                     <DataGridComboBoxColumn.EditingElementStyle>
@@ -183,27 +182,12 @@
                                     </x:Array>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="IsEditable" Value="False"/>
-                            <Setter Property="Background" Value="#F8F9FA"/>
-                            <Setter Property="BorderBrush" Value="#CED4DA"/>
-                            <Setter Property="Padding" Value="8,4"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ComboBox">
-                                        <Border Background="{TemplateBinding Background}"
-                                                BorderBrush="{TemplateBinding BorderBrush}"
-                                                BorderThickness="1"
-                                                CornerRadius="5">
-                                            <ContentPresenter VerticalAlignment="Center" Margin="8,0"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
                         </Style>
                     </DataGridComboBoxColumn.EditingElementStyle>
                 </DataGridComboBoxColumn>
+
                 <DataGridTextColumn Header="Ngày sinh" 
-                                   Binding="{Binding NgaySinh, UpdateSourceTrigger=PropertyChanged}" 
+                                   Binding="{Binding NgaySinh, StringFormat=dd/MM/yyyy, UpdateSourceTrigger=PropertyChanged}" 
                                    Width="120"/>
                 <DataGridTextColumn Header="Điện thoại" 
                                    Binding="{Binding DienThoai, UpdateSourceTrigger=PropertyChanged}" 
@@ -221,9 +205,40 @@
                                    Binding="{Binding Elo}" 
                                    IsReadOnly="True" 
                                    Width="80"/>
-                <DataGridTextColumn Header="Nhóm" 
-                                   Binding="{Binding NhomTrinhDo, UpdateSourceTrigger=PropertyChanged}" 
-                                   Width="140"/>
+
+                <!-- Nhóm trình độ ComboBox -->
+                <DataGridComboBoxColumn Header="Nhóm"
+                                       SelectedItemBinding="{Binding NhomTrinhDo, UpdateSourceTrigger=PropertyChanged}"
+                                       Width="140">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource">
+                                <Setter.Value>
+                                    <x:Array Type="{x:Type sys:String}">
+                                        <sys:String>Cao</sys:String>
+                                        <sys:String>Trung bình</sys:String>
+                                        <sys:String>Thấp</sys:String>
+                                    </x:Array>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource">
+                                <Setter.Value>
+                                    <x:Array Type="{x:Type sys:String}">
+                                        <sys:String>Cao</sys:String>
+                                        <sys:String>Trung bình</sys:String>
+                                        <sys:String>Thấp</sys:String>
+                                    </x:Array>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>

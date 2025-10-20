@@ -1,0 +1,142 @@
+﻿<UserControl x:Class="BadmintonClub.Views.Tournaments.EloRankingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Loaded="UserControl_Loaded">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+
+        <!-- Bộ lọc và tiêu đề -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="BẢNG XẾP HẠNG ELO" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Margin="0,0,0,10"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Nhóm trình độ:" 
+                           VerticalAlignment="Center" 
+                           Margin="0,0,10,0"
+                           FontWeight="SemiBold"/>
+                <ComboBox x:Name="CbFilterGroup"
+                          Width="150" 
+                          SelectedIndex="0"
+                          SelectionChanged="CbFilterGroup_SelectionChanged"
+                          Margin="0,0,10,0">
+                    <ComboBoxItem Content="Tất cả" Tag="All"/>
+                    <ComboBoxItem Content="Cao" Tag="Cao"/>
+                    <ComboBoxItem Content="Trung bình" Tag="Trung bình"/>
+                    <ComboBoxItem Content="Thấp" Tag="Thấp"/>
+                </ComboBox>
+                <Button Content="🔄 Tải lại" 
+                        Command="{Binding LoadCommand}" 
+                        Padding="10,5"
+                        Background="#2196F3"
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontWeight="Bold"
+                        Cursor="Hand"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Bảng xếp hạng -->
+        <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding Rankings}"
+                  SelectedItem="{Binding SelectedMember}"
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True"
+                  LoadingRow="DataGrid_LoadingRow"
+                  GridLinesVisibility="All"
+                  BorderThickness="1"
+                  BorderBrush="#E0E0E0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="#" Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}" Width="50">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Mã TV" Binding="{Binding MemberCode}" Width="100">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Họ tên" Binding="{Binding HoTen}" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="5"/>
+                            <Setter Property="FontWeight" Value="Medium"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Elo" Binding="{Binding Elo}" Width="80">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Foreground" Value="#4CAF50"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Nhóm" Binding="{Binding NhomTrinhDo}" Width="100">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+            <DataGrid.InputBindings>
+                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding LoadMemberHistoryCommand}"/>
+            </DataGrid.InputBindings>
+        </DataGrid>
+
+        <!-- Lịch sử Elo của thành viên đã chọn -->
+        <GroupBox Grid.Row="2" 
+                  Header="{Binding SelectedMember.HoTen, StringFormat='Lịch sử Elo: {0}', FallbackValue='Lịch sử Elo'}"
+                  Padding="5"
+                  Margin="0,10,0,0">
+            <DataGrid ItemsSource="{Binding MemberHistory}"
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Thời gian" Binding="{Binding Timestamp, StringFormat=dd/MM/yyyy HH:mm}" Width="150"/>
+                    <DataGridTextColumn Header="Trước" Binding="{Binding EloBefore}" Width="70">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Sau" Binding="{Binding EloAfter}" Width="70">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Δ" Binding="{Binding Delta}" Width="60">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+    </Grid>
+</UserControl>

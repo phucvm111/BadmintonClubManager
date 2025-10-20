@@ -1,0 +1,81 @@
+﻿<Window x:Class="BadmintonClub.Views.Tournaments.TournamentNameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tạo giải đấu mới" 
+        Width="450" 
+        Height="280"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5"
+        ResizeMode="NoResize">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#4CAF50" 
+                Padding="15" 
+                Margin="-20,-20,-20,20">
+            <TextBlock Text="🏆 Tạo giải đấu mới" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="White"/>
+        </Border>
+
+        <!-- Tên giải -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+            <TextBlock Text="Tên giải đấu:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtTournamentName" 
+                     FontSize="14"
+                     Padding="8"
+                     BorderBrush="#BDBDBD"
+                     BorderThickness="1"/>
+            <TextBlock Text="Ví dụ: Giải cầu lông mùa hè 2025" 
+                       FontSize="11" 
+                       Foreground="#757575" 
+                       Margin="0,3,0,0"/>
+        </StackPanel>
+
+        <!-- Ngày bắt đầu -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,15">
+            <TextBlock Text="Ngày bắt đầu:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <DatePicker x:Name="DpStartDate" 
+                        FontSize="14"
+                        Padding="8"
+                        BorderBrush="#BDBDBD"
+                        BorderThickness="1"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right">
+            <Button Content="✓ Tạo giải" 
+                    Click="BtnOK_Click"
+                    Width="100" 
+                    Height="40"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Background="#4CAF50"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Margin="0,0,10,0"
+                    Cursor="Hand"/>
+            <Button Content="✕ Hủy" 
+                    Click="BtnCancel_Click"
+                    Width="100" 
+                    Height="40"
+                    FontSize="14"
+                    Background="#757575"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</Window>

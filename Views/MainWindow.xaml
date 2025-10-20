@@ -3,20 +3,66 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:BadmintonClub.ViewModels"
         xmlns:v="clr-namespace:BadmintonClub.Views"
-        Title="Quản lý CLB Cầu lông" Width="1200" Height="800">
+        xmlns:vFinance="clr-namespace:BadmintonClub.Views.Finance"
+        xmlns:vTournaments="clr-namespace:BadmintonClub.Views.Tournaments"
+        Title="Quản lý CLB Cầu lông" Width="1400" Height="850"
+        WindowStartupLocation="CenterScreen">
+
     <Window.Resources>
-        <!-- DataTemplate cục bộ để test -->
+        <!-- DataTemplate cục bộ -->
         <DataTemplate DataType="{x:Type vm:MembersViewModel}">
             <v:MembersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AttendanceViewModel}">
+            <v:AttendanceView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FinanceViewModel}">
+            <vFinance:FinanceView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TournamentsViewModel}">
+            <vTournaments:TournamentsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TournamentDetailViewModel}">
+            <vTournaments:TournamentDetailView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EloRankingViewModel}">
+            <vTournaments:EloRankingView/>
         </DataTemplate>
     </Window.Resources>
 
     <DockPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="8">
-            <Button Content="Thành viên" Command="{Binding NavigateMembersCommand}" Margin="4"/>
-            <Button Content="Điểm danh" Command="{Binding NavigateAttendanceCommand}" Margin="4"/>
+        <!-- Thanh điều hướng -->
+        <Border DockPanel.Dock="Top" Background="#F5F5F5" BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="👥 Thành viên" 
+                        Command="{Binding NavigateMembersCommand}" 
+                        Margin="5,0" 
+                        Padding="15,8"
+                        FontSize="14"/>
+                <Button Content="📋 Điểm danh" 
+                        Command="{Binding NavigateAttendanceCommand}" 
+                        Margin="5,0" 
+                        Padding="15,8"
+                        FontSize="14"/>
+                <Button Content="💰 Tài chính" 
+                        Command="{Binding NavigateFinanceCommand}" 
+                        Margin="5,0" 
+                        Padding="15,8"
+                        FontSize="14"/>
+                <Button Content="🏆 Giải đấu" 
+                        Command="{Binding NavigateTournamentsCommand}" 
+                        Margin="5,0" 
+                        Padding="15,8"
+                        FontSize="14"/>
+                <Button Content="📊 Bảng Elo" 
+                        Command="{Binding NavigateEloRankingCommand}" 
+                        Margin="5,0" 
+                        Padding="15,8"
+                        FontSize="14"/>
+            </StackPanel>
+        </Border>
 
-        </StackPanel>
-        <ContentControl Content="{Binding CurrentView}" />
+        <!-- Khu vực hiển thị nội dung -->
+        <ContentControl Content="{Binding CurrentView}" Margin="10"/>
     </DockPanel>
 </Window>

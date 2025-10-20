@@ -1,0 +1,92 @@
+﻿<Window x:Class="BadmintonClub.Views.Tournaments.MatchInputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nhập kết quả trận đấu" 
+        Width="450" Height="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Thông tin trận -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="{Binding TeamAName, StringFormat='Đội A: {0}'}" 
+                       FontSize="16" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock Text="{Binding TeamBName, StringFormat='Đội B: {0}'}" 
+                       FontSize="16" FontWeight="Bold"/>
+        </StackPanel>
+
+        <!-- Hướng dẫn -->
+        <Border Grid.Row="1" 
+                Background="#E3F2FD" 
+                Padding="10" 
+                Margin="0,0,0,15"
+                CornerRadius="4">
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="💡 Nhập tỷ số từng game (rally to 21). " FontWeight="SemiBold"/>
+                <Run Text="Thắng 2/3 game = thắng trận."/>
+            </TextBlock>
+        </Border>
+
+        <!-- Nhập tỷ số -->
+        <StackPanel Grid.Row="2">
+            <!-- Game 1 -->
+            <StackPanel Orientation="Horizontal" Margin="0,8">
+                <TextBlock Text="Game 1:" Width="70" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                <TextBlock Text="Đội A" Width="50" VerticalAlignment="Center"/>
+                <TextBox x:Name="TxtG1A" Width="60" Margin="5,0" FontSize="14"/>
+                <TextBlock Text=" - " VerticalAlignment="Center" Margin="5,0" FontSize="16" FontWeight="Bold"/>
+                <TextBox x:Name="TxtG1B" Width="60" Margin="5,0" FontSize="14"/>
+                <TextBlock Text="Đội B" Width="50" VerticalAlignment="Center" Margin="5,0"/>
+            </StackPanel>
+
+            <!-- Game 2 -->
+            <StackPanel Orientation="Horizontal" Margin="0,8">
+                <TextBlock Text="Game 2:" Width="70" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                <TextBlock Text="Đội A" Width="50" VerticalAlignment="Center"/>
+                <TextBox x:Name="TxtG2A" Width="60" Margin="5,0" FontSize="14"/>
+                <TextBlock Text=" - " VerticalAlignment="Center" Margin="5,0" FontSize="16" FontWeight="Bold"/>
+                <TextBox x:Name="TxtG2B" Width="60" Margin="5,0" FontSize="14"/>
+                <TextBlock Text="Đội B" Width="50" VerticalAlignment="Center" Margin="5,0"/>
+            </StackPanel>
+
+            <!-- Game 3 -->
+            <StackPanel Orientation="Horizontal" Margin="0,8">
+                <TextBlock Text="Game 3:" Width="70" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                <TextBlock Text="Đội A" Width="50" VerticalAlignment="Center"/>
+                <TextBox x:Name="TxtG3A" Width="60" Margin="5,0" FontSize="14"/>
+                <TextBlock Text=" - " VerticalAlignment="Center" Margin="5,0" FontSize="16" FontWeight="Bold"/>
+                <TextBox x:Name="TxtG3B" Width="60" Margin="5,0" FontSize="14"/>
+                <TextBlock Text="Đội B" Width="50" VerticalAlignment="Center" Margin="5,0"/>
+            </StackPanel>
+
+            <TextBlock Text="* Game 3 có thể để trống nếu thắng 2-0" 
+                       FontStyle="Italic" 
+                       Foreground="Gray" 
+                       Margin="0,15,0,0"
+                       FontSize="12"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,20,0,0">
+            <Button Content="✓ Xác nhận" 
+                    Click="BtnOK_Click"
+                    Width="110" 
+                    Padding="10,6"
+                    Margin="0,0,10,0"
+                    FontWeight="Bold"/>
+            <Button Content="✕ Hủy" 
+                    Click="BtnCancel_Click"
+                    Width="110" 
+                    Padding="10,6"/>
+        </StackPanel>
+    </Grid>
+</Window>

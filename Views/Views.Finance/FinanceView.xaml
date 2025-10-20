@@ -1,0 +1,165 @@
+﻿<UserControl x:Class="BadmintonClub.Views.Finance.FinanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:utils="clr-namespace:BadmintonClub.Utils">
+    <UserControl.Resources>
+        <!-- Converter DateOnly <-> DateTime -->
+        <utils:DateOnlyToDateTimeConverter x:Key="DateOnlyConv"/>
+    </UserControl.Resources>
+
+    <Grid Margin="12">
+        <TabControl>
+
+            <!-- ================= Thu/Chi ================= -->
+            <TabItem Header="Thu/Chi">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Hàng 0: Bộ lọc -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Từ ngày" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <DatePicker SelectedDate="{Binding TuNgay}" Width="130" Margin="0,0,8,0"/>
+                        <TextBlock Text="Đến ngày" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <DatePicker SelectedDate="{Binding DenNgay}" Width="130" Margin="0,0,8,0"/>
+                        <TextBlock Text="Danh mục" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <ComboBox Width="160"
+                                  ItemsSource="{Binding DanhMuc}"
+                                  SelectedValuePath="CategoryId"
+                                  DisplayMemberPath="Name"
+                                  SelectedValue="{Binding SelectedCategoryId}"
+                                  Margin="0,0,8,0"/>
+                        <Button Content="Tải dữ liệu" Command="{Binding TaiThuChiCommand}"/>
+                        <Button Content="Thêm" Command="{Binding ThemThuChiCommand}" Margin="8,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Hàng 1: DataGrid -->
+                    <DataGrid x:Name="dgThuChi" Grid.Row="1"
+                              ItemsSource="{Binding ThuChi}"
+                              AutoGenerateColumns="False"
+                              Margin="0,0,0,8"
+                              CanUserAddRows="False"
+                              IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <!-- Ngày -->
+                            <DataGridTemplateColumn Header="Ngày" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Date, StringFormat=\{0:yyyy-MM-dd\}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <DatePicker SelectedDate="{Binding Date, Mode=TwoWay, Converter={StaticResource DateOnlyConv}}"
+                                                    Width="120"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Mô tả -->
+                            <DataGridTextColumn Header="Mô tả"
+                                                Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                                Width="*"/>
+
+                            <!-- Số tiền -->
+                            <DataGridTextColumn Header="Số tiền (+Thu/-Chi)"
+                                                Binding="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N0}"
+                                                Width="160"/>
+
+                            <!-- Danh mục: hiển thị tên, sửa bằng ComboBox -->
+                            <DataGridTemplateColumn Header="Danh mục" Width="180">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Category.Name}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox
+                                            ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.DanhMuc}"
+                                            DisplayMemberPath="Name"
+                                            SelectedValuePath="CategoryId"
+                                            SelectedValue="{Binding CategoryId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Hàng 2: Thanh xác nhận + tổng kết -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Lưu mục chọn"
+                                Command="{Binding LuuThuChiCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=dgThuChi}"
+                                Margin="0,0,8,0"/>
+                        <Button Content="Hủy thay đổi"
+                                Command="{Binding HuyThuChiCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=dgThuChi}"
+                                Margin="0,0,16,0"/>
+                        <Button Content="Xóa mục chọn"
+                                Command="{Binding XoaThuChiCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=dgThuChi}"
+                                Margin="0,0,16,0"/>
+                        <TextBlock Text="{Binding TongThu, StringFormat=Tổng thu: {0:N0} VND}" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TongChi, StringFormat=Tổng chi: {0:N0} VND}" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TongNet, StringFormat=Chênh lệch: {0:N0} VND}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- ================= Hội phí ================= -->
+            <TabItem Header="Hội phí">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Hàng 0: dải lọc -->
+                    <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Kỳ (YYYY-MM)" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBox Width="90" Text="{Binding KyHienTai}" Margin="0,0,12,0"/>
+                        <TextBlock Text="Mức hội phí (VND)" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBox Width="120" Text="{Binding MucHoiPhi}" Margin="0,0,8,0"/>
+                        <Button Content="Lưu mức phí" Command="{Binding LuuMucHoiPhiCommand}" Margin="0,0,8,0"/>
+                        <Button Content="Tạo hội phí kỳ này" Command="{Binding TaoHoiPhiKyCommand}" Margin="0,0,8,0"/>
+                        <CheckBox Content="Chỉ hiển thị chưa thanh toán" IsChecked="{Binding ChiChuaThanhToan}" Margin="12,0,8,0"/>
+                        <CheckBox Content="Chỉ hiển thị quá hạn" IsChecked="{Binding ChiQuaHan}" Margin="0,0,8,0"/>
+                        <Button Content="Tải danh sách" Command="{Binding TaiHoiPhiCommand}"/>
+                    </StackPanel>
+
+                    <!-- Hàng 1, Cột 0: danh sách -->
+                    <DataGrid x:Name="dgHoiPhi" Grid.Row="1" Grid.Column="0"
+                              ItemsSource="{Binding HoiPhi}" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,0,8,0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Thành viên ID" Binding="{Binding MemberId}" Width="160"/>
+                            <DataGridTextColumn Header="Kỳ" Binding="{Binding Period}" Width="90"/>
+                            <DataGridTextColumn Header="Số tiền" Binding="{Binding Amount}" Width="120"/>
+                            <DataGridCheckBoxColumn Header="Đã thu" Binding="{Binding Paid}" Width="80"/>
+                            <DataGridTextColumn Header="Ngày thu" Binding="{Binding PaidDate}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Hàng 1, Cột 1: cột nút gọn -->
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+                        <Button Content="Đánh dấu đã thu"
+                                Height="38" Margin="0,0,0,8"
+                                Command="{Binding DanhDauDaThuCoXacNhanCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=dgHoiPhi}"/>
+                        <Button Content="Gửi nhắc phí quá hạn"
+                                Height="38"
+                                Command="{Binding GuiNhacPhiQuaHanCoXacNhanCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</UserControl>

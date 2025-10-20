@@ -1,0 +1,295 @@
+﻿<UserControl x:Class="BadmintonClub.Views.Tournaments.TournamentDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Thông tin giải đấu -->
+        <Border Grid.Row="0" 
+                Background="White" 
+                BorderBrush="#E0E0E0" 
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="15"
+                Margin="0,0,0,15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Tên giải - có thể edit -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBox x:Name="TxtTournamentName"
+                             Text="{Binding Tournament.TenGiai, UpdateSourceTrigger=PropertyChanged}" 
+                             FontSize="24" 
+                             FontWeight="Bold"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             Width="400"
+                             VerticalAlignment="Center"/>
+                    <Button Content="💾 Lưu" 
+                            Command="{Binding UpdateTournamentNameCommand}"
+                            Width="80"
+                            Height="35"
+                            Margin="10,0,0,0"
+                            Background="#4CAF50"
+                            Foreground="White"
+                            BorderThickness="0"
+                            FontWeight="Bold"
+                            Cursor="Hand"/>
+                </StackPanel>
+
+                <!-- Thông tin khác -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <TextBlock Text="Ngày bắt đầu: " FontWeight="SemiBold" Foreground="#757575"/>
+                    <TextBlock Text="{Binding Tournament.NgayBatDau, StringFormat=dd/MM/yyyy}" Foreground="#212121"/>
+                    <TextBlock Text=" | Trạng thái: " FontWeight="SemiBold" Margin="15,0,0,0" Foreground="#757575"/>
+                    <TextBlock Text="{Binding Tournament.Status}" Foreground="#212121"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Hạng mục thi đấu -->
+        <GroupBox Grid.Row="1" Header="Hạng mục thi đấu" Padding="10" Margin="0,0,0,10">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <ComboBox x:Name="CbHangMuc" Width="150" Margin="0,0,10,0" SelectedIndex="0">
+                        <ComboBoxItem Content="Đơn Nam"/>
+                        <ComboBoxItem Content="Đôi Nam"/>
+                        <ComboBoxItem Content="Đơn Nữ"/>
+                        <ComboBoxItem Content="Đôi Nữ"/>
+                        <ComboBoxItem Content="Đôi Nam Nữ"/>
+                    </ComboBox>
+                    <Button Content="Thêm hạng mục" 
+                            Command="{Binding AddEventCommand}" 
+                            CommandParameter="{Binding ElementName=CbHangMuc, Path=SelectedItem.Content}"
+                            Padding="10,5"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="👥 Chọn thủ công" 
+                            Command="{Binding GenerateBracketManualCommand}"
+                            Padding="12,5"
+                            Background="#2196F3"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            ToolTip="Chọn thủ công thành viên tham gia"/>
+                </StackPanel>
+
+                <DataGrid ItemsSource="{Binding Events}"
+                          SelectedItem="{Binding SelectedEvent}"
+                          AutoGenerateColumns="False" 
+                          Height="120"
+                          IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Hạng mục" Binding="{Binding HangMuc}" Width="*"/>
+                        <DataGridTextColumn Header="Quy tắc Seed" Binding="{Binding QuyTacSeed}" Width="120"/>
+                    </DataGrid.Columns>
+                    <DataGrid.InputBindings>
+                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding LoadMatchesCommand}"/>
+                    </DataGrid.InputBindings>
+                </DataGrid>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Hướng dẫn -->
+        <Border Grid.Row="2" 
+                Background="#E8F5E9" 
+                BorderBrush="#4CAF50" 
+                BorderThickness="1" 
+                Padding="10" 
+                Margin="0,0,0,10"
+                CornerRadius="4">
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="💡 Hướng dẫn: " FontWeight="Bold"/>
+                <LineBreak/>
+                <Run Text="1️⃣ Chọn hạng mục → Click 'Thêm hạng mục'"/>
+                <LineBreak/>
+                <Run Text="2️⃣ Click hạng mục vừa thêm trong bảng"/>
+                <LineBreak/>
+                <Run Text="3️⃣ Click '👥 Chọn thủ công' → Chọn thành viên"/>
+                <LineBreak/>
+                <Run Text="4️⃣ Double-click trận đấu bên dưới để nhập tỷ số → Elo tự động cập nhật"/>
+                <LineBreak/>
+                <Run Text="🎨 Màu: " FontWeight="Bold"/>
+                <Run Text="🥇 Vàng rực = Chung kết (Vô địch + Á quân) | 🥈 Xanh da trời = Bán kết | 🟢 Xanh lá = Đã đấu"/>
+            </TextBlock>
+        </Border>
+
+        <!-- Danh sách trận đấu -->
+        <GroupBox Grid.Row="3" Header="Trận đấu" Padding="10">
+            <DataGrid ItemsSource="{Binding Matches}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      GridLinesVisibility="All"
+                      BorderThickness="1"
+                      BorderBrush="#E0E0E0">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Vòng" Binding="{Binding Round}" Width="60">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="14"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Đội A -->
+                    <DataGridTextColumn Header="Đội A" Binding="{Binding TeamA.TenDoi}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Padding" Value="8"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                                <Setter Property="FontSize" Value="13"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- VS -->
+                    <DataGridTextColumn Header="vs" Width="40">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="vs"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="Foreground" Value="#757575"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Đội B -->
+                    <DataGridTextColumn Header="Đội B" Binding="{Binding TeamB.TenDoi}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Padding" Value="8"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                                <Setter Property="FontSize" Value="13"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Tỷ số -->
+                    <DataGridTextColumn Header="Tỷ số" Binding="{Binding ScoreJson}" Width="200">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="FontFamily" Value="Consolas"/>
+                                <Setter Property="FontSize" Value="12"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Người thắng với icon đặc biệt -->
+                    <DataGridTemplateColumn Header="Người thắng" Width="180">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <!-- Icon cho Vô địch/Á quân -->
+                                    <TextBlock Name="IconBlock" 
+                                               FontSize="20" 
+                                               Margin="0,0,5,0"
+                                               VerticalAlignment="Center"/>
+
+                                    <!-- Tên người thắng -->
+                                    <TextBlock Text="{Binding WinnerTeam.TenDoi}" 
+                                               FontWeight="Bold"
+                                               FontSize="13"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <DataTemplate.Triggers>
+                                    <!-- Vô địch (Round 0 và Completed) -->
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Round}" Value="0"/>
+                                            <Condition Binding="{Binding Completed}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="IconBlock" Property="Text" Value="🥇"/>
+                                        <Setter TargetName="IconBlock" Property="ToolTip" Value="Vô địch"/>
+                                    </MultiDataTrigger>
+
+                                    <!-- Á quân - cần logic phức tạp hơn, tạm thời hiển thị người thắng bình thường -->
+                                    <DataTrigger Binding="{Binding Completed}" Value="True">
+                                        <Setter TargetName="IconBlock" Property="Foreground" Value="#4CAF50"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Hoàn thành -->
+                    <DataGridCheckBoxColumn Header="✓" Binding="{Binding Completed}" Width="50" IsReadOnly="True">
+                        <DataGridCheckBoxColumn.ElementStyle>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="IsHitTestVisible" Value="False"/>
+                                <Setter Property="Focusable" Value="False"/>
+                            </Style>
+                        </DataGridCheckBoxColumn.ElementStyle>
+                    </DataGridCheckBoxColumn>
+                </DataGrid.Columns>
+
+                <DataGrid.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" 
+                                  Command="{Binding InputMatchResultCommand}"
+                                  CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                </DataGrid.InputBindings>
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="MinHeight" Value="35"/>
+                        <Style.Triggers>
+                            <!-- Chung kết (Round 0) - Màu vàng GOLD rực rỡ + viền đậm -->
+                            <DataTrigger Binding="{Binding Round}" Value="0">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#FFD700" Offset="0.0"/>
+                                            <GradientStop Color="#FFC700" Offset="0.5"/>
+                                            <GradientStop Color="#FFD700" Offset="1.0"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="BorderBrush" Value="#FF8C00"/>
+                                <Setter Property="BorderThickness" Value="3"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="14"/>
+                            </DataTrigger>
+
+                            <!-- Bán kết (Round 1) - Màu xanh da trời -->
+                            <DataTrigger Binding="{Binding Round}" Value="1">
+                                <Setter Property="Background" Value="#B3E5FC"/>
+                                <Setter Property="BorderBrush" Value="#0288D1"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </DataTrigger>
+
+                            <!-- Trận hoàn thành (các vòng khác) - Màu xanh lá nhạt -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Completed}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" Value="#E8F5E9"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+            </DataGrid>
+        </GroupBox>
+    </Grid>
+</UserControl>
