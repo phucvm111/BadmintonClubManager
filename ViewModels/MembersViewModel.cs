@@ -15,9 +15,9 @@ public partial class MembersViewModel : ObservableObject
 {
     private readonly BadmintonClubContext _db;
 
-    [ObservableProperty] private ObservableCollection<ClubMember> members = new();
-    [ObservableProperty] private ClubMember? selectedMember;
-    [ObservableProperty] private string? searchText;
+    [ObservableProperty] private ObservableCollection<ClubMember> _members = new();
+    [ObservableProperty] private ClubMember? _selectedMember;
+    [ObservableProperty] private string? _searchText;
 
     // View sẽ gán delegate này để commit edit
     public Action? CommitEditRequested { get; set; }
@@ -25,9 +25,11 @@ public partial class MembersViewModel : ObservableObject
     public MembersViewModel(BadmintonClubContext db)
     {
         _db = db;
-        _ = LoadAsync();
+        // KHÔNG gọi LoadAsync() ở đây nữa vì MainViewModel sẽ gọi LoadCommand
     }
 
+    // ← THÊM [RelayCommand] để sinh LoadCommand tự động
+    [RelayCommand]
     private async Task LoadAsync()
     {
         Members = new ObservableCollection<ClubMember>(
@@ -56,15 +58,15 @@ public partial class MembersViewModel : ObservableObject
             NhomTrinhDo = "TrungBinh",
             Elo = 1000,
             MemberCode = tempCode,
-            HoTen = string.Empty, // tránh NULL
-            GioiTinh = "Nam"      // mặc định
+            HoTen = string.Empty,
+            GioiTinh = "Nam"
         };
         Members.Add(m);
         SelectedMember = m;
     }
 
     [RelayCommand]
-    private async Task Save()
+    private async Task SaveAsync()
     {
         try
         {
@@ -95,7 +97,6 @@ public partial class MembersViewModel : ObservableObject
                               ? EntityState.Modified : EntityState.Added;
             }
 
-
             await _db.SaveChangesAsync();
             await LoadAsync();
             MessageBox.Show("Đã lưu thành công.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -111,7 +112,7 @@ public partial class MembersViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task Delete()
+    private async Task DeleteAsync()
     {
         try
         {
@@ -129,43 +130,34 @@ public partial class MembersViewModel : ObservableObject
 
             if (confirm != MessageBoxResult.Yes) return;
 
-            // Kiểm tra ràng buộc liên quan (ví dụ tài chính)
             bool hasFinance = await _db.FinanceEntries.AnyAsync(e => e.MemberId == SelectedMember.MemberId);
             if (hasFinance)
                 throw new InvalidOperationException("Không thể xóa: thành viên có bản ghi tài chính.");
 
-            // Đảm bảo chỉ 1 instance được tracking:
-            // 1) Detach mọi instance cùng key đang được track
-            foreach (var entry in _db.ChangeTracker.Entries<BadmintonClub.Models.Member>()
+            foreach (var entry in _db.ChangeTracker.Entries<ClubMember>()
                          .Where(e => e.Entity.MemberId == SelectedMember.MemberId).ToList())
             {
                 entry.State = EntityState.Detached;
             }
 
-            // 2) Tạo stub entity với key và attach, sau đó Remove
-            var stub = new BadmintonClub.Models.Member { MemberId = SelectedMember.MemberId };
+            var stub = new ClubMember { MemberId = SelectedMember.MemberId };
             _db.Attach(stub);
             _db.Members.Remove(stub);
 
             await _db.SaveChangesAsync();
 
-            // Xóa khỏi danh sách UI
             Members.Remove(SelectedMember);
             SelectedMember = null;
 
-            MessageBox.Show("Đã xóa thành công.", "Thông báo",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Đã xóa thành công.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (DbUpdateException ex)
         {
-            MessageBox.Show($"Lỗi khi xóa (DB): {ex.GetBaseException().Message}",
-                "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Lỗi khi xóa (DB): {ex.GetBaseException().Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi khi xóa: {ex.Message}",
-                "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Lỗi khi xóa: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
 }
