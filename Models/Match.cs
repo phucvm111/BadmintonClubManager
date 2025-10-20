@@ -44,4 +44,8 @@ public partial class Match
     public virtual Team TeamA { get; set; } = null!;
 
     public virtual Team TeamB { get; set; } = null!;
+    public Team? WinnerTeam => WinnerTeamId.HasValue
+    ? (TeamAid == WinnerTeamId ? TeamA : TeamB)
+    : null;
+
 }
